@@ -1,271 +1,298 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/login_controller.dart'; // Import the LoginController
+import '../controller/login_controller.dart';
+import '../snack_bar_model.dart';
+import 'attendance_view.dart';
 import 'daily_visit.dart';
 import 'login_screen.dart';
-import 'package:moiz_steel/constants.dart';
-import 'package:moiz_steel/first_page_buildrow_model.dart';
-import 'package:moiz_steel/snack_bar_model.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-
 import 'outlet_registration.dart';
 
-class FirstPage extends StatelessWidget {
-  final LoginController loginController = Get.put(LoginController()); // Get the existing controller
+class Home extends StatelessWidget {
+  final LoginController loginController = Get.put(LoginController());
+
+  Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        // appBar: PreferredSize(
-        //   preferredSize: const Size.fromHeight(35), // AppBar height
-        //   child: AppBar(
-        //     automaticallyImplyLeading: false,
-        //     elevation: 0, // No shadow
-        //     backgroundColor: kAppBarColor, // Transparent AppBar
-        //     actions: [
-        //       PopupMenuButton<String>(
-        //         onSelected: (value) {
-        //           if (value == 'logout') {
-        //             Get.off(() => LoginScreen());
-        //             print("logout");
-        //           }
-        //         },
-        //         itemBuilder: (context) => [
-        //           const PopupMenuItem(
-        //             value: 'logout',
-        //             child: Text('Logout'),
-        //           ),
-        //         ],
-        //         icon: const Icon(Icons.menu, color: Colors.white), // White "hamburger" icon
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        body: Stack(
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
 
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/SF_img.jpg'),
-                  fit: BoxFit.cover,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF00bf8f), Color(0xFF00A375)], // Bright blue gradient colors
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
                 ),
               ),
-            ),
-            GlassmorphicContainer(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              borderRadius: 0,
-              blur: 30,
-              alignment: Alignment.bottomCenter,
-              border: 0,
-              linearGradient: LinearGradient(
-                colors: [
-                  Colors.red.withOpacity(0.1),
-                  Colors.red.withOpacity(0.2),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  // Handle logout logic
+                  Get.off(() => LoginScreen());
+                },
               ),
-              borderGradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.5),
-                  Colors.white.withOpacity(0.5),
-                ],
+              ListTile(
+                leading: const Icon(Icons.cloud_upload),
+                title: const Text('Upload Data'),
+                onTap: () {
+                  // Handle upload data logic
+                  CustomSnackbar.show(
+                    title: "Upload",
+                    message: "Uploading Data...",
+                  );
+                },
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+            ],
+          ),
+        ),
+        body: SafeArea(
+          child: Center(
+            child: Column(
               children: [
-                const SizedBox(height: 25), // Space at the top
-                Obx(() => Column(
-                  children: [
-                    // const Text(
-                    //   "Welcome",
-                    //   style: TextStyle(
-                    //     color: Colors.white,
-                    //     fontSize: 24, // Font size for "Welcome"
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    const SizedBox(height: 10),
-                    Text(
-                      loginController.fullName.value, // User's name
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24, // Same font size for consistency
-                        fontWeight: FontWeight.bold,
+                // Profile Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const CircleAvatar(
+                        radius: 25,
+                        backgroundImage: AssetImage('assets/images/background_img.jpeg'), // Replace with your image asset
                       ),
-                    ),
-                  ],
-                )),
-                const SizedBox(height: 60),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Welcome Back,",
+                              style: TextStyle(color: Colors.grey, fontSize: 14),
+                            ),
+                            Text(
+                              "Armaghan Zikriya",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu, color: Colors.black),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Cards Section
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 140.0), // Padding from the top
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Center horizontally
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        buildElevatedRow(
-                          icon: Icons.arrow_forward,
-                          text: 'Daily visit',
-                          image: 'assets/images/img9.png',
-                          onTap: () {
-                            Get.to(() => DailyVisit());
-                          },
+                  child: ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      // New Bigger Card with Progress Bar
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10), // Space between rows
-                        buildElevatedRow(
-                          icon: Icons.arrow_forward,
-                          text: 'Outlet Registration',
-                          image: 'assets/images/img10.png',
-                          onTap: () {
-                            Get.to(() => RegistrationFormScreen());
-                          },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Total Outlets: 10",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text(
+                              "Visits: 7",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Progress Bar
+                            LinearProgressIndicator(
+                              value: 7 / 10, // Calculating progress value (7 visits out of 10)
+                              backgroundColor: Colors.grey[300],
+                              color: Colors.orange, // Color of the progress bar
+                              minHeight: 10, // Height of the progress bar
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10),
-                        buildElevatedRow(
-                          icon: Icons.arrow_forward,
-                          text: 'Attendance',
-                          image: 'assets/images/img11.png',
-                          onTap: () {
-                            CustomSnackbar.show(
-                              title: "Complaints",
-                              message: "Complaints",
-                            );
-                          },
+                      ),
+                      CustomCard(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFFE082), Color(0xFFFFD54F)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        const SizedBox(height: 10),
-                        buildElevatedRow(
-                          icon: Icons.arrow_forward,
-                          text: 'Reports',
-                          image: 'assets/images/img12.png', // Add the appropriate image for Reports
-                          onTap: () {
-                            // Handle the onTap for Reports
-                          },
+                        title: 'DailyVisit',
+                        subtitle: 'Start Your Daily Visit here',
+                        icon: Icons.calendar_today,
+                        onTap: () {
+                          Get.to(() => DailyVisit(), transition: Transition.leftToRight);
+                        },
+                      ),
+                      CustomCard(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF80DEEA), Color(0xFF4DD0E1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
+                        title: 'Outlet Registration',
+                        subtitle: 'Register your outlet here',
+                        icon: Icons.app_registration,
+                        onTap: () {
+                          Get.to(() => RegistrationFormScreen(),transition: Transition.leftToRight);
+                        },
+                      ),
+                      CustomCard(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFCE93D8), Color(0xFFBA68C8)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        title: 'Attendance',
+                        subtitle: 'Mark attendance here',
+                        icon: Icons.front_hand,
+                        onTap: () {
+                          Get.to(() => Attendance());
+
+
+                          // CustomSnackbar.show(
+                          //   title: "Attendance",
+                          //   message: "Mark attendance here",
+                          // );
+                        },
+                      ),
+                      CustomCard(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF8A65), Color(0xFFFF7043)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        title: 'Reports',
+                        subtitle: 'View your reports here',
+                        icon: Icons.report,
+                        onTap: () {
+                          // Handle onTap for Reports
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 25, // Adjust position based on topMargin and desired overlap
-              child: Center(
-                child: Padding(padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                  child: Container(
-                    width: 325, // Adjust the size of the small card
-                    height: 200, // Adjust the height of the small card
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: const Offset(0, 4), // Shadow effect
-                          blurRadius: 6,
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                      child: Row(
-                        children: [
-                          // Text portion
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Total Outlets: 10",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Visits: 7",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 150,
-                            width: 150,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                value: 0.7, // Set the progress value (70%)
-                                strokeWidth: 12, // Adjust the thickness of the progress indicator
-                                backgroundColor: Colors.grey[200], // Set the background color
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.deepOrangeAccent,
-                                ), // Set the color of the progress indicator
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget buildElevatedRow({required IconData icon, required String text, required String image, required Function onTap}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: GestureDetector(
-        onTap: () => onTap(),
-        child: Container(
-          // margin: const EdgeInsets.symmetric(vertical: 3.0),
-          decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF).withOpacity(0.4),
-            borderRadius: BorderRadius.circular(15),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.black.withOpacity(0.1),
-            //     offset: Offset(0, 0),
-            //     blurRadius: 0,
-            //   ),
-            // ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
+class CustomCard extends StatelessWidget {
+  final LinearGradient gradient;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const CustomCard({
+    required this.gradient,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 12.0),
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(image, height: 50, width: 50),
-                const SizedBox(width: 10),
                 Text(
-                  text,
-                  style: const TextStyle(fontSize: 20, color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const Spacer(),
-                Icon(icon, size: 30, color: Color(0xFFFFFFFF)),
+                const SizedBox(height: 5),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
-          ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 40,
+            ),
+          ],
         ),
       ),
     );

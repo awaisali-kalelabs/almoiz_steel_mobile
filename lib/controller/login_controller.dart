@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
 
+import '../utilities/common_functions.dart';
+import '../utilities/device_info.dart';
 import '../view/home.dart';
 // import '../models/constants.dart';
 // import '../services/device_info.dart';
@@ -14,8 +16,11 @@ import '../view/home.dart';
 
 class LoginController extends GetxController {
   // final DatabaseController databaseController = Get.put(DatabaseController());
-  final TextEditingController userNameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final CommonFunctions commonFunctions = Get.put(CommonFunctions());
+
+
+  late TextEditingController userNameController;
+  late TextEditingController passwordController;
   var username = ''.obs;
   var password = ''.obs;
   var isLoginSuccessful = false.obs;
@@ -25,11 +30,12 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchDeviceId();  // Fetch the device ID when the controller is initialized
+    passwordController = TextEditingController();
+    userNameController = TextEditingController();
+    commonFunctions.fetchDeviceId();  // Fetch the device ID when the controller is initialized
+      commonFunctions.fetchLocation();
   }
-  void fetchDeviceId() async {
-    // deviceId.value = await DeviceIdProvider.getDeviceId();
-  }
+
   // This function checks if the provided username and password are valid
   Future<void> loginCheck() async {
     const String serverIp = "18.184.139.178";
@@ -40,7 +46,7 @@ class LoginController extends GetxController {
     String currDateTime = dateFormat.format(DateTime.now());
 
     String param =
-        "timestamp=$currDateTime&UserID=${username.value}&Password=${password.value}&DeviceID=$deviceId";
+        "timestamp=$currDateTime&UserID=${username.value}&Password=${password.value}&DeviceID=${commonFunctions.deviceId}";
     var queryParameters = <String, String>{
       "SessionID": encryptSessionID(param),
     };
@@ -130,7 +136,8 @@ class LoginController extends GetxController {
     //   if (loginSuccess) {
     //     if(userName == '2593' ){
     //       print("first");
-    Get.to(() => FirstPage());
+
+    Get.to(() => Home(), transition: Transition.downToUp,);
     //
     //     }
     //     else if(userName == '2693')

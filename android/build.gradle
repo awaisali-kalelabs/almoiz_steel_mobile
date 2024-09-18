@@ -4,6 +4,15 @@ allprojects {
         mavenCentral()
     }
 }
+buildscript {
+    ext {
+
+        minSdkVersion = 21
+        targetSdkVersion = 33
+        compileSdkVersion = 33
+    }
+}
+
 
 rootProject.buildDir = '../build'
 subprojects {

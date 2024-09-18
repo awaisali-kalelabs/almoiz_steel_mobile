@@ -27,7 +27,7 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.initialValue,
     this.enabled,
-    this.hintTextColor = Colors.white,
+    this.hintTextColor = Colors.grey,
     this.textColor = Colors.black,
   });
 
@@ -58,11 +58,11 @@ class CustomTextFormField extends StatelessWidget {
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(color: Colors.blue),
+          borderSide: const BorderSide(color: Color(0xFF00A375)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
+          borderSide: const BorderSide(color: Color(0xFF00A375), width: 2.0),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),

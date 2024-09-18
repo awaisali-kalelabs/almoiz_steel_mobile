@@ -20,20 +20,49 @@ class FormController extends GetxController {
   var isOwner = false.obs;
   var isOnRent = false.obs;
 
+  @override
+  void onClose() {
+    // Dispose of each controller to avoid memory leaks
+    businessNameController.dispose();
+    ownerNameController.dispose();
+    cnicNumberController.dispose();
+    ntnNumberController.dispose();
+    landlineNumberController.dispose();
+    mobileNumberController.dispose();
+    billingAddressController.dispose();
+    shippingAddressController.dispose();
+    billingContactPersonController.dispose();
+    logisticsContactPersonController.dispose();
+    cityNameController.dispose();
+    completeAddressController.dispose();
+    yearInBusinessController.dispose();
+    monthlySaleVolumeController.dispose();
+    previousDealershipController.dispose();
+    super.onClose();
+  }
+
   void toggleOwnership(bool isOwnerSelected) {
     if (isOwnerSelected) {
-      isOwner.value = true;
-      isOnRent.value = false;
+      isOwner.value = !isOwner.value; // Toggle the current state
+      if (isOwner.value) {
+        isOnRent.value = false; // Ensure the other checkbox is unselected
+      }
     } else {
-      isOwner.value = false;
-      isOnRent.value = true;
+      isOnRent.value = !isOnRent.value; // Toggle the current state
+      if (isOnRent.value) {
+        isOwner.value = false; // Ensure the other checkbox is unselected
+      }
     }
   }
-
-
-  bool _validateForm() {
-    // Add validation for each field if needed
-    return true;
+  bool validateForm() {
+    // Example of validating required fields
+    if (businessNameController.text.isEmpty ||
+        ownerNameController.text.isEmpty ||
+        cnicNumberController.text.isEmpty ||
+        mobileNumberController.text.isEmpty ||
+        cityNameController.text.isEmpty) {
+      return false; // Invalid form
+    }
+    return true; // Form is valid
   }
-
 }

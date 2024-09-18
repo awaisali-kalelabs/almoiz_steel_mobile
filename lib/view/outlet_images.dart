@@ -1,102 +1,72 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moiz_steel/widgets/build_section_title.dart';
 import '../controller/outlet_images_controller.dart';
 import 'package:moiz_steel/constants.dart';
 
+import '../services/database.dart';
+import '../utilities/common_functions.dart';
+import '../widgets/build_image_section.dart';
+import '../widgets/custom_appbar.dart';
 import '../widgets/custom_button_widget.dart';
 
 class OutletImages extends StatelessWidget {
   final PerformTask controller = Get.put(PerformTask());
+  final CommonFunctions commonFunctions = Get.put(CommonFunctions());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          "Outlet Details",
-          style: kAppBarTextColor,
-        ),
-        elevation: 5,
-        backgroundColor: kAppBarColor,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildSectionTitle("Outlet Image"),
-              const SizedBox(height: 10),
-              _buildImageSection(controller.outletImagePath),
-              const SizedBox(height: 20),
-              _buildSectionTitle("Storage Image"),
-              const SizedBox(height: 10),
-              _buildImageSection(controller.storageImagePath),
-              const SizedBox(height: 20),
-              _buildSectionTitle("Visit Card "),
-              const SizedBox(height: 10),
-              _buildImageSection(controller.visitingCardImagePath),
-              const SizedBox(height: 20),
-          CustomButtonWidget(text: 'Next',
-            onPressed: () {
-              // Implement submit functionality
-            },
-          )
-            ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const CustomAppBar(title: 'Outlet Details'),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: [
+                    BuildImageSection(
+                      title: "Outlet Image",
+                      imagePath: commonFunctions.outletImagePath,
+                      gradient: controller.cardGradients[0],
+                    ),
+
+                    BuildImageSection(
+                        title: "Storage Image",
+                        imagePath: commonFunctions.storageImagePath,
+                        gradient: controller.cardGradients[1]),
+
+                    BuildImageSection(
+                      title: "Visit Card",
+                      imagePath: commonFunctions.visitingCardImagePath,
+                      gradient: controller.cardGradients[2],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 50),
+                CustomButtonWidget(
+                  text: 'Save',
+                  icon: Icons.save_alt_outlined,
+                  onPressed: () async {
+                    controller.proceedWithRegistration();
+                    await controller.submitData();
+                    commonFunctions.visitingCardImagePath.value = '';
+                    commonFunctions.storageImagePath.value = '';
+                    commonFunctions.outletImagePath.value = '';
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-
-  Widget _buildSectionTitle(String title) {
-    return Container(
-      width: 400,
-      padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 5),
-      decoration: BoxDecoration(
-        color: kAppBarColor,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImageSection(RxString imagePath) {
-    return GestureDetector(
-      onTap: () {
-        controller.captureImage(imagePath);
-      },
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Obx(() {
-            return imagePath.value == ''
-                ? Icon(
-                    Icons.camera_alt,
-                    color: Colors.grey[600],
-                    size: 50,
-                  )
-                : Image.file(
-                    File(imagePath.value),
-                    fit: BoxFit.cover,
-                  );
-          }),
-        ),
-      ),
-    );
-  }
-
 }
