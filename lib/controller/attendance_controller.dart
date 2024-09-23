@@ -10,7 +10,7 @@ class AttendanceController extends GetxController {
   final AllNoOrders = <Map<String, dynamic>>[].obs;
   final SelectFreightTerms = ''.obs;
   final NoOrderReasons = <Map<String, dynamic>>[].obs;
-  var attendanceTypeId = 0.obs;
+  var   attendanceTypeId = 0.obs;
   final isSelected = [false, false, false, false, false, false, false].obs;
 
   var checkInImage = ''.obs;

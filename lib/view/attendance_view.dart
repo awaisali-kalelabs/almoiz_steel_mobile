@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 
 import '../constants.dart';
+import '../controller/attendance_action_controller.dart';
 import '../controller/attendance_controller.dart';
 import '../utilities/common_functions.dart';
 import '../widgets/custom_appbar.dart';
@@ -12,7 +13,7 @@ import '../widgets/custom_button_widget.dart';
 class Attendance extends StatelessWidget {
   final AttendanceController controller = Get.put(AttendanceController());
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
-
+  final AttendanceActionController attendanceController = Get.put(AttendanceActionController());
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -100,7 +101,7 @@ class Attendance extends StatelessWidget {
                                     child: GestureDetector(
                                       onTap: () {
                                         controller.attendanceTypeId.value = 2;
-                                        _showBottomSheet(context, 'Check Out', commonFunctions.checkOutImage);
+                                        _showBottomSheet(context, 'Check Out', commonFunctions.checkInImage);
                                       },
                                       child: Card(
                                         color: Color(0xFFDCE6FD),
@@ -195,13 +196,13 @@ class Attendance extends StatelessWidget {
                           ? (commonFunctions.checkInImage.value.isNotEmpty
                           ? FileImage(File(commonFunctions.checkInImage.value))
                           : null)
-                          : (commonFunctions.checkOutImage.value.isNotEmpty
-                          ? FileImage(File(commonFunctions.checkOutImage.value))
+                          : (commonFunctions.checkInImage.value.isNotEmpty
+                          ? FileImage(File(commonFunctions.checkInImage.value))
                           : null),
                       child: (action == 'Check In' &&
                           commonFunctions.checkInImage.value.isEmpty) ||
                           (action == 'Check Out' &&
-                              commonFunctions.checkOutImage.value.isEmpty)
+                              commonFunctions.checkInImage.value.isEmpty)
                           ? Icon(Icons.camera_alt, size: 40)
                           : null,
                     ),
@@ -211,11 +212,14 @@ class Attendance extends StatelessWidget {
                 ),
                 CustomButtonWidget(
                   text: 'Save',
-                  onPressed: () {
+                  onPressed: () async {
                     // Clear image paths on submit
+                    await attendanceController.markAttendanceLocally();
+                    await attendanceController.UploadMarkAttendance();
+                    await attendanceController.uploadMarkAttendancePhoto();
                     Get.back();
                     commonFunctions.checkInImage.value='';
-                    commonFunctions.checkOutImage.value  ='';
+                    commonFunctions.checkInImage.value  ='';
 
                     // Additional submit functionality
                   },

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:get/get.dart';
@@ -226,6 +227,134 @@ class DatabaseHelper extends GetxService {
       },
     );
   }
+  Future<List<Map>> getAllMarkedAttendances(
+      int isUploaded) async {
+    final db = await database;
+
+    List args = [];
+    args.add(isUploaded);
+    // Query the table for all The Dogs.
+    final List<Map> maps = await db.rawQuery(
+        "select * from attendanceRecords where is_uploaded=?1", args);
+
+    return maps;
+  }
+
+
+  Future<List<Map>> getAllMarkedUploadedAttendances(
+      int isPhotoUploaded) async {
+    final db = await database;
+
+    List args = [];
+    args.add(isPhotoUploaded);
+    print("isPhotoUploaded : "+isPhotoUploaded.toString());
+    // Query the table for all The Dogs.
+    final List<Map> maps = await db.rawQuery(
+        "select * from attendanceRecords where is_uploaded=1 and is_photo_uploaded=?1",
+        args);
+    print("getAllMarkedUploadedAttendances Maps :"+maps.toString());
+
+    return maps;
+  }
+
+  Future markAttendanceUploadedPhoto(id) async {
+    print("markAttendanceUploaded id  ==>> " + id.toString());
+    final db = await database;
+
+    List args = [];
+    args.add(id);
+    try {
+      await db.rawUpdate(
+          'update attendanceRecords set is_photo_uploaded=1 where mobile_request_id=?1 and is_uploaded=1',
+          args);
+    } catch (error) {
+      print("markAttendanceUploadedPhoto ==>> " + error.toString());
+    }
+
+    return true;
+  }
+  Future markAttendance(
+      mobile_request_id,
+      image_path,
+      attendance_type_id,
+      lat,
+      lng,
+      accuracy,
+      user_id,
+      is_uploaded,
+      uuid,
+      is_photo_uploaded
+      ) async {
+    final db = await database;
+
+    // Print all the arguments
+    print("Arguments:");
+    print("attendance_type_id: $attendance_type_id");
+    print("lat: $lat");
+    print("lng: $lng");
+    print("accuracy: $accuracy");
+    print("is_uploaded: $is_uploaded");
+    print("uuid: $uuid");
+    print("image_path: $image_path");
+    print("user_id: $user_id");
+    print("is_photo_uploaded: $is_photo_uploaded");
+
+    // Get current DateTime and format it
+    DateTime now = DateTime.now();
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    String formattedDate = dateFormat.format(now);
+
+    // Print the formatted datetime
+    print("Formatted DateTime: $formattedDate");
+
+    // Print the query before executing
+    String query = '''
+  insert into attendanceRecords 
+  (mobile_request_id, mobile_timestamp, attendance_type_id, lat, lng, accuracy, is_uploaded, uuid, image_path, user_id, is_photo_uploaded) 
+  values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ''';
+    print("SQL Query: $query");
+
+    try {
+      await db.rawInsert(query, [
+        mobile_request_id,
+        formattedDate,  // Use the formatted DateTime
+        attendance_type_id,
+        lat,
+        lng,
+        accuracy,
+        is_uploaded,
+        uuid,
+        image_path,
+        user_id,
+        is_photo_uploaded
+      ]);
+    } catch (error) {
+      print("Error inside inserting: " + error.toString());
+    }
+
+    return true;
+  }
+
+  Future markAttendanceUploaded(int id) async {
+    print("markAttendanceUploaded id" + id.toString());
+    final db = await database;
+
+    List args = [];
+    args.add(id);
+
+    try {
+      await db.rawUpdate(
+          'update attendanceRecords set is_uploaded=1 where mobile_request_id=?1 ',
+          args);
+    } catch (error) {
+      print("markAttendanceUploaded ==>> " + error.toString());
+    }
+
+    return true;
+  }
+
+
 
   Future<String?> getStoredUsername() async {
     final db =
