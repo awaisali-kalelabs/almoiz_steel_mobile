@@ -8,6 +8,7 @@ import 'dart:io';
 
 import '../snack_bar_model.dart';
 import '../utilities/common_functions.dart';
+
 class RegistrationImages extends GetxController {
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
 
@@ -16,7 +17,6 @@ class RegistrationImages extends GetxController {
   var visitingCardImagePath = ''.obs;
   var iDCardImagePath = ''.obs;
   var isOwner = false.obs;
-
 
   // final _picker = ImagePicker();
   var imagePath = ''.obs;
@@ -43,7 +43,7 @@ class RegistrationImages extends GetxController {
       commonFunctions.outletImageRegistrationPath.value = '';
       commonFunctions.godownImagePath.value = '';
       commonFunctions.idCardImagePath.value = '';
-      commonFunctions.visitingCardImagePath.value = '';
+      commonFunctions.visitingCardRegistrationImagePath.value = '';
       CustomSnackbar.show(
         title: "Success",
         message: "images selected.",
@@ -57,65 +57,71 @@ class RegistrationImages extends GetxController {
       );
     }
   }
-  Future<void> sendDataToServer(List allDocuments) async {
-    // Assuming `allDocuments` is provided from some external source
-    print("retrieve data::::${allDocuments}");
 
-    for (int i = 0; i < allDocuments.length; i++) {
-      int MobileRequestID = int.parse(allDocuments[i]['OrderID'].toString());
-      print("MobileRequestID ::::${MobileRequestID}");
+  Future<void> sendDataToServer() async {
+    // Assuming allDocuments is provided from some external source
 
-      final url = Uri.parse('http://18.199.215.22/portal/mobile/MobileUploadNewOutletImage');
+    int MobileRequestID = commonFunctions.orderId.value;
+    print("MobileRequestID ::::${MobileRequestID}");
 
-      // Use image paths from commonFunctions directly
-      var photoFile1 = File(commonFunctions.outletImageRegistrationPath.value);
-      var photoFile2 = File(commonFunctions.godownImagePath.value);
-      var photoFile3 = File(commonFunctions.idCardImagePath.value);
-      var photoFile4 = File(commonFunctions.visitingCardImagePath.value);
+    final url = Uri.parse(
+        'http://192.168.201.197:8080/portal/mobile/MobileUploadNewOutletImage');
 
-      try {
-        print("Sending data for user: " + commonFunctions.userId.value.toString());
+    // Use image paths from commonFunctions directly
+    var photoFile1 = File(commonFunctions.outletImageRegistrationPath.value);
+    var photoFile2 = File(commonFunctions.godownImagePath.value);
+    var photoFile3 = File(commonFunctions.idCardImagePath.value);
+    var photoFile4 = File(commonFunctions.visitingCardRegistrationImagePath.value);
 
-        var request = http.MultipartRequest('POST', url)
-          ..fields['order_id'] = MobileRequestID.toString()
-          ..fields['user_id'] = commonFunctions.userId.value;
+    try {
+      print(
+          "Sending data for user: " + commonFunctions.userId.value.toString());
 
-        // Add the four image files if they exist
-        if (photoFile1.existsSync()) {
-          request.files.add(await _createMultipartFile(photoFile1, "Outlet_image1"));
-        }
-        if (photoFile2.existsSync()) {
-          request.files.add(await _createMultipartFile(photoFile2, "Godown_image"));
-        }
-        if (photoFile3.existsSync()) {
-          request.files.add(await _createMultipartFile(photoFile3, "ID_Card_image"));
-        }
-        if (photoFile4.existsSync()) {
-          request.files.add(await _createMultipartFile(photoFile4, "Visiting_Card_image"));
-        }
+      var request = http.MultipartRequest('POST', url)
+        ..fields['RequestId'] = MobileRequestID.toString();
+      //..fields['user_id'] = commonFunctions.userId.value;
 
-        // Send the request and await response
-        var response = await request.send();
-
-        if (response.statusCode == 200) {
-          print("Image upload successful for order $MobileRequestID");
-          var responseData = await response.stream.bytesToString();
-          print("Response: $responseData");
-        } else {
-          print("Image upload failed with status code: ${response.statusCode}");
-        }
-      } catch (e) {
-        print('Error uploading images: $e');
-        // Handle the error here
+      // Add the four image files if they exist
+      if (photoFile1.existsSync()) {
+        request.files
+            .add(await _createMultipartFile(photoFile1, "Outlet_image1"));
       }
-    }
-  }    Future<http.MultipartFile> _createMultipartFile(
-        File file, String fieldName) async {
-      var stream = http.ByteStream(file.openRead());
-      var length = await file.length();
-      String fileName =
-      basename(file.path); // Use path.basename to get the file name
+      if (photoFile2.existsSync()) {
+        request.files
+            .add(await _createMultipartFile(photoFile2, "Godown_image"));
+      }
+      if (photoFile3.existsSync()) {
+        request.files
+            .add(await _createMultipartFile(photoFile3, "ID_Card_image"));
+      }
+      if (photoFile4.existsSync()) {
+        request.files
+            .add(await _createMultipartFile(photoFile4, "Visiting_Card_image"));
+      }
 
-      return http.MultipartFile(fieldName, stream, length, filename: fileName);
+      // Send the request and await response
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print("Image upload successful for order $MobileRequestID");
+        var responseData = await response.stream.bytesToString();
+        print("Response: $responseData");
+      } else {
+        print("Image upload failed with status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error uploading images: $e');
+      // Handle the error here
     }
   }
+
+  Future<http.MultipartFile> _createMultipartFile(
+      File file, String fieldName) async {
+    var stream = http.ByteStream(file.openRead());
+    var length = await file.length();
+    String fileName =
+        basename(file.path); // Use path.basename to get the file name
+
+    return http.MultipartFile(fieldName, stream, length, filename: fileName);
+  }
+}

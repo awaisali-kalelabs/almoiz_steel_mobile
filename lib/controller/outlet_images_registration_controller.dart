@@ -95,8 +95,8 @@ class FormController extends GetxController {
   }
 
   Future<void> submitFormData() async {
-    //const String serverIp = "18.199.215.22";  // Replace with your actual server IP
-    const String serverIp = "192.168.201.197:8080";  // Replace with your actual server IP
+    const String serverIp = "18.199.215.22";  // Replace with your actual server IP
+    // const String serverIp = "192.168.201.197:8080";  // Replace with your actual server IP
     const String apiEndpoint = "/portal/mobile/MobileSyncOutletRegistration";  // Replace with your actual API endpoint
     //String getCurrentTimestamp() {
 /*      DateFormat dateFormat1 = DateFormat("dd/MM/yyyy HH:mm:ss");
@@ -147,7 +147,7 @@ class FormController extends GetxController {
         "&accuracy=${commonFunctions.accuracy.value.toString()}"
         "&created_on=${getCurrentTimestampSql()}"
         "&created_by=${loginController.username.value}"
-        "&uuid=1121232322454541"
+        "&uuid= ${commonFunctions.deviceId.value}"
         "&platform=Android"
         "&version=1.0";
 

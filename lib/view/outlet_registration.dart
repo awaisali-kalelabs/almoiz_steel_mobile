@@ -222,8 +222,8 @@ class RegistrationFormScreen extends StatelessWidget {
                     if (_formKey.currentState!.validate()) {
                       // Proceed if the form is valid
                       await controller.submitFormData();
-                    /*  Get.to(() => OutletRegistrationImages(),
-                          transition: Transition.leftToRight);*/
+                      Get.to(() => OutletRegistrationImages(),
+                          transition: Transition.leftToRight);
                     }
                   },
                 ),

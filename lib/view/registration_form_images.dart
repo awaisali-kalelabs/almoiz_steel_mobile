@@ -79,7 +79,8 @@ class OutletRegistrationImages extends StatelessWidget {
               text: 'Save',
               icon: Icons.save_alt_outlined,
               onPressed: () async {
-                await controller.proceedWithRegistration();
+                await controller.sendDataToServer();
+                // await controller.proceedWithRegistration();
                 // Clear image paths on submit
 
                 // Additional submit functionality
