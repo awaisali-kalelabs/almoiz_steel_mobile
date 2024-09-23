@@ -95,47 +95,85 @@ class FormController extends GetxController {
   }
 
   Future<void> submitFormData() async {
-    const String serverIp = "18.199.215.22";  // Replace with your actual server IP
-    const String apiEndpoint = "";  // Replace with your actual API endpoint
+    //const String serverIp = "18.199.215.22";  // Replace with your actual server IP
+    const String serverIp = "192.168.201.197:8080";  // Replace with your actual server IP
+    const String apiEndpoint = "/portal/mobile/MobileSyncOutletRegistration";  // Replace with your actual API endpoint
+    //String getCurrentTimestamp() {
+/*      DateFormat dateFormat1 = DateFormat("dd/MM/yyyy HH:mm:ss");
+      String currDateTime = dateFormat1.format(DateTime.now());
+      var str = currDateTime.split(".");*/
+    String getCurrentTimestamp() {
+      DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
+      String currDateTime = dateFormat.format(DateTime.now());
+      var str = currDateTime.split(".");
 
-    // Format date for "created_on" field
-    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-    String createdOn = dateFormat.format(DateTime.now());
+      String TimeStamp = str[0];
+      return TimeStamp;
+    }
+    //  String TimeStamp = str[0];
+ /*     return TimeStamp;
+    }*/
 
+    String getCurrentTimestampSql() {
+      DateFormat dateFormat = DateFormat("yyyy/MM/dd HH:mm:ss");
+      String currDateTime = dateFormat.format(DateTime.now());
+      var str = currDateTime.split(".");
+
+      String TimeStamp = str[0];
+      return TimeStamp;
+    }
     // Construct the parameter string manually as you provided in the example
     String params =
-        "business_name=${Uri.encodeComponent(businessNameController.text)}"
-        "&owner_name=${Uri.encodeComponent(ownerNameController.text)}"
-        "&cnic_number=${Uri.encodeComponent(cnicNumberController.text)}"
-        "&ntn_number=${Uri.encodeComponent(ntnNumberController.text)}"
-        "&landline_number=${Uri.encodeComponent(landlineNumberController.text)}"
-        "&mobile_number=${Uri.encodeComponent(mobileNumberController.text)}"
-        "&billing_address=${Uri.encodeComponent(billingAddressController.text)}"
-        "&shipping_address=${Uri.encodeComponent(shippingAddressController.text)}"
-        "&billing_contact_person=${Uri.encodeComponent(billingContactPersonController.text)}"
-        "&logistics_contact_person=${Uri.encodeComponent(logisticsContactPersonController.text)}"
-        "&city_name=${Uri.encodeComponent(cityNameController.text)}"
-        "&complete_address=${Uri.encodeComponent(completeAddressController.text)}"
-        "&year_in_business=${Uri.encodeComponent(yearInBusinessController.text)}"
-        "&monthly_sale_volume=${Uri.encodeComponent(monthlySaleVolumeController.text)}"
-        "&previous_dealership=${Uri.encodeComponent(previousDealershipController.text)}"
+        "timestamp=${getCurrentTimestamp()}"
+        "&business_name=${businessNameController.text}"
+        "&owner_name=${ownerNameController.text}"
+        "&cnic_number=${cnicNumberController.text}"
+        "&ntn_number=${ntnNumberController.text}"
+        "&landline_number=${landlineNumberController.text}"
+        "&mobile_number=${mobileNumberController.text}"
+        "&billing_address=${billingAddressController.text}"
+        "&shipping_address=${shippingAddressController.text}"
+        "&billing_contact_person=${billingContactPersonController.text}"
+        "&logistics_contact_person=${logisticsContactPersonController.text}"
+        "&city_name=${cityNameController.text}"
+        "&complete_address=${completeAddressController.text}"
+        "&year_in_business=${yearInBusinessController.text}"
+        "&monthly_sale_volume=${monthlySaleVolumeController.text}"
+        "&previous_dealership=${previousDealershipController.text}"
         "&is_owner=${isOwner.value}"
-        "&is_on_rent=${isOnRent.value}"
-        "&lat=${Uri.encodeComponent(commonFunctions.latitude.value.toString())}"
-        "&lng=${Uri.encodeComponent(commonFunctions.longitude.value.toString())}"
-        "&accuracy=${Uri.encodeComponent(commonFunctions.accuracy.value.toString())}"
-        "&created_on=${Uri.encodeComponent(createdOn)}"
-        "&created_by=${Uri.encodeComponent(loginController.username.value)}";
+        "&mobile_request_id=${commonFunctions.orderId.value}"
+        "&lat=${commonFunctions.latitude.value.toString()}"
+        "&lng=${commonFunctions.longitude.value.toString()}"
+        "&accuracy=${commonFunctions.accuracy.value.toString()}"
+        "&created_on=${getCurrentTimestampSql()}"
+        "&created_by=${loginController.username.value}"
+        "&uuid=1121232322454541"
+        "&platform=Android"
+        "&version=1.0";
 
     try {
-      var url = Uri.http(serverIp, apiEndpoint, {"SessionID": encryptSessionID(params)});
-      var response = await http.get(
+      print(params);
+      var queryParameters = <String, String>{
+        "SessionID": encryptSessionID(params),
+      };
+      print(queryParameters);
+     // var url = Uri.http(serverIp, apiEndpoint , queryParameters );
+      var url = Uri.http(serverIp, '/portal/mobile/MobileSyncOutletRegistration');
+
+      print(url);
+/*      var response = await http.get(
         url,
         headers: {
           HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
         },
-      );
-
+      );*/
+      var response = await http.post(
+          url,
+          headers: {
+            HttpHeaders.contentTypeHeader:
+            'application/x-www-form-urlencoded'
+          },
+          body: queryParameters);
       if (response.statusCode == 200) {
         var responseBody = json.decode(utf8.decode(response.bodyBytes));
 

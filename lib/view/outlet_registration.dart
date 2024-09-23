@@ -218,11 +218,12 @@ class RegistrationFormScreen extends StatelessWidget {
                 CustomButtonWidget(
                   text: 'Next',
                   icon: Icons.arrow_circle_right_rounded,
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // Proceed if the form is valid
-                      Get.to(() => OutletRegistrationImages(),
-                          transition: Transition.leftToRight);
+                      await controller.submitFormData();
+                    /*  Get.to(() => OutletRegistrationImages(),
+                          transition: Transition.leftToRight);*/
                     }
                   },
                 ),
