@@ -79,17 +79,17 @@ class Home extends StatelessWidget {
                         backgroundImage: AssetImage('assets/images/background_img.jpeg'), // Replace with your image asset
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Welcome Back,",
                               style: TextStyle(color: Colors.grey, fontSize: 14),
                             ),
                             Text(
-                              "Armaghan Zikriya",
-                              style: TextStyle(
+                              "${loginController.fullName.value}",
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,

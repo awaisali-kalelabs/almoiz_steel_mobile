@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../constants.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
@@ -34,7 +33,7 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      maxLength: 10,
+      maxLength: 50, // Updated maxLength to 50
       textInputAction: TextInputAction.next,
       initialValue: initialValue,
       enabled: enabled,
@@ -42,10 +41,6 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       keyboardType: keyboardType,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(
-            RegExp(r'^[a-zA-Z0-9]+$')),
-      ],
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           vertical: 8,
@@ -83,9 +78,7 @@ class CustomTextFormField extends StatelessWidget {
           return 'Please enter a valid $hintText.';
         }
 
-        if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
-          return 'Invalid input. Only alphanumeric characters are allowed.';
-        }
+        // No need for alphanumeric check since special characters are allowed
 
         if (hintText == 'Password') {
           if (value.contains(RegExp(r'\s'))) {

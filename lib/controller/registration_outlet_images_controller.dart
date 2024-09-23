@@ -35,9 +35,13 @@ class RegistrationImages extends GetxController {
   }
 
   // Method to trigger validation and proceed if all images are selected
-  void proceedWithRegistration() {
+  Future<void> proceedWithRegistration() async {
     if (areAllImagesSelected()) {
       // All images are set, proceed with registration
+      commonFunctions.outletImageRegistrationPath.value = '';
+      commonFunctions.godownImagePath.value = '';
+      commonFunctions.idCardImagePath.value = '';
+      commonFunctions.visitingCardImagePath.value = '';
       CustomSnackbar.show(
         title: "Success",
         message: "images selected.",

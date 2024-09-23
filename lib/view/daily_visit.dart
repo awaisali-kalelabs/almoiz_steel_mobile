@@ -4,11 +4,20 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controller/daily_visit_controller.dart';
 import '../controller/login_controller.dart';
+import '../controller/outlet_images_controller.dart';
+import '../services/database.dart';
+import '../utilities/common_functions.dart';
 import '../widgets/custom_appbar.dart';
 import 'outlet_images.dart';
 import 'package:moiz_steel/constants.dart';
 
 class DailyVisit extends StatelessWidget {
+  final DatabaseHelper dbController = Get.put(DatabaseHelper());
+  final CommonFunctions commonFunctions = Get.put(CommonFunctions());
+  final PerformTask controller = Get.put(PerformTask());
+
+
+
   final LoginController loginController = Get.put(LoginController());
   final DailyVisitController dailyVisitController = Get.put(DailyVisitController());
 
@@ -120,7 +129,21 @@ class DailyVisit extends StatelessWidget {
         final cardContent = filteredContents[index];
         return GestureDetector(
           onTap: () async {
+            DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
+            String currDateTime = dateFormat.format(DateTime.now());
+            await dbController.addOutletNoOrder(
+              id: commonFunctions.orderId.value,
+              outletId:2,
+              reasonTypeId: '1',
+              uuid: '23232323',
+              createdOn: currDateTime,
+              lat:commonFunctions.latitude.value.toString(),
+              lng: commonFunctions.longitude.value.toString(),
+              accuracy:commonFunctions.accuracy.value.toString(),
+              isUploaded: '0',
+            );
             await Get.to(() => OutletImages(),transition: Transition.leftToRight);
+
           },
           child: Container(
             width: double.infinity,
@@ -175,18 +198,28 @@ class DailyVisit extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                cardContent['outlet_name'] ?? "",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.0,
-                ),
+              Row(
+                children: [
+                  Text(cardContent['outlet_id'].toString(),style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18.0,
+                  ),),
+                  SizedBox(width:10 ,),
+                  Text(
+                    cardContent['outlet_name'] ?? "",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Text(cardContent['address'] ?? ""),
               const SizedBox(height: 10),
-              Text(cardContent['sub_area'] ?? ""),
+
             ],
           ),
         ),

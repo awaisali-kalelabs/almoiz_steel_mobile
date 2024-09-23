@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
 
+import '../services/database.dart';
 import '../utilities/common_functions.dart';
 import '../utilities/device_info.dart';
 import '../view/home.dart';
@@ -15,9 +16,8 @@ import '../view/home.dart';
 // import 'package:sign_in_alfalah/new_user_login/new_view/new_first_page.dart';
 
 class LoginController extends GetxController {
-  // final DatabaseController databaseController = Get.put(DatabaseController());
+  final DatabaseHelper dbController = Get.put(DatabaseHelper());
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
-
 
   late TextEditingController userNameController;
   late TextEditingController passwordController;
@@ -25,45 +25,120 @@ class LoginController extends GetxController {
   var password = ''.obs;
   var isLoginSuccessful = false.obs;
   var fullName = ''.obs;
-  var deviceId = ''.obs;  // New observable for device ID
+  var deviceId = ''.obs; // New observable for device ID
+  double appVersion = 1.0;
+  String platform = "android";
+  // var outlets = [].obs;
+
 
   @override
   void onInit() {
     super.onInit();
-    passwordController = TextEditingController();
-    userNameController = TextEditingController();
-    commonFunctions.fetchDeviceId();  // Fetch the device ID when the controller is initialized
-      commonFunctions.fetchLocation();
+    passwordController = TextEditingController(text: "wildspace");
+    userNameController = TextEditingController(text: "2");
+    commonFunctions
+        .fetchDeviceId(); // Fetch the device ID when the controller is initialized
+    commonFunctions.fetchLocation();
   }
 
   // This function checks if the provided username and password are valid
   Future<void> loginCheck() async {
-    const String serverIp = "18.184.139.178";
-    // String deviceId = await DeviceIdProvider.getDeviceId();
-    print("device id: $deviceId");
-
+    const String serverIp = "18.199.215.22";
     DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
     String currDateTime = dateFormat.format(DateTime.now());
 
     String param =
-        "timestamp=$currDateTime&UserID=${username.value}&Password=${password.value}&DeviceID=${commonFunctions.deviceId}";
+        "timestamp=$currDateTime&LoginUsername=${username.value}&LoginPassword=${password.value}&DeviceID=${commonFunctions.deviceId}&Platform=$platform&AppVersion=$appVersion";
     var queryParameters = <String, String>{
       "SessionID": encryptSessionID(param),
     };
 
     try {
-      var url = Uri.http(
-          serverIp, '/portal/mobile/MobileAuthenticateUserV1', queryParameters);
+      var url = Uri.http(serverIp, '/portal/mobile/MobileAuthenticateUser', queryParameters);
       var response = await http.get(url, headers: {
         HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded',
       });
 
       if (response.statusCode == 200) {
         var responseBody = json.decode(utf8.decode(response.bodyBytes));
-        print("response==200");
+
         if (responseBody["success"] == 'true') {
           fullName.value = responseBody["DisplayName"];
           isLoginSuccessful.value = true;
+
+          // Storing outlet data from BeatPlanRows dynamically
+          List<dynamic> beatPlanRows = responseBody["BeatPlanRows"];
+
+          // Iterate through each outlet and store its details
+          for (var outlet in beatPlanRows) {
+            var outletID = outlet["OutletID"];
+            var outletName = outlet["OutletName"];
+            var address = outlet["Address"];
+            var telephone = outlet["Telepohone"];
+            var lat = outlet["lat"];
+            var lng = outlet["lng"];
+            var dayNumber = outlet["DayNumber"];
+            var PJPID= outlet['PJPID'];
+            var distributor_id= outlet['distributor_id'];
+            var region_id= outlet['region_id'];
+            var city_id= outlet['city_id'];
+
+
+            // Example: Storing in a list (could be a GetX observable list or a simple list)
+
+            // Example of logging the stored values
+            print("OutletID: $outletID");
+            print("OutletName: $outletName");
+            print("Address: $address");
+            print("Telephone: $telephone");
+            print("Lat: $lat, Lng: $lng");
+            print("dayNumber: $dayNumber");
+            print("PJPID: $PJPID");
+            print("distributor_id: $distributor_id");
+            print("region_id: $region_id");
+            print("city_id: $city_id");
+
+            int outletIDInt = int.tryParse(outletID) ?? 0;  // Convert to int
+            int dayNumberInt = int.tryParse(dayNumber) ?? 1;
+
+            try {
+              await dbController.insertPreSellOutlet(
+                outlet_id: outletIDInt,
+                outlet_name: outletName,
+                day_number: dayNumberInt,
+                owner: fullName.value,
+                address: address,
+                telephone: telephone,
+                nfc_tag_id: 'abc'.toString(),
+                visit_type: 0,
+                lat: lat.toString(),
+                lng: lng.toString(),
+                area_label: 'xyz',
+                sub_area_label: 'pqr',
+                is_alternate_visible: 0,
+                pic_channel_id: 'asd',
+                channel_label: 'tru',
+                order_created_on_date: 'uti',
+                common_outlets_vpo_classifications: 'he',
+                Visit: 'she',
+                purchaser_name: 'rut'.toString(),
+                purchaser_mobile_no: '00000'.toString(),
+                cache_contact_nic: '987654'.toString(),
+              );
+              print("Outlet data inserted successfully");
+            } catch (e) {
+              print("Error inserting outlet data: $e");
+              showErrorDialog('Error', 'Failed to insert outlet data: $e');
+              // You may decide to skip the database insertion if it fails and still allow login
+              isLoginSuccessful.value = false;
+              return;  // Skip the rest of the process
+            }
+
+
+
+
+          }
+
           print("response==200 successful");
         } else {
           isLoginSuccessful.value = false;
@@ -72,36 +147,37 @@ class LoginController extends GetxController {
         }
       } else {
         isLoginSuccessful.value = false;
-        showErrorDialog('Status code Error',
-            'Server returned status: ${response.statusCode}');
+        showErrorDialog('Status code Error', 'Server returned status: ${response.statusCode}');
       }
     } catch (e) {
       isLoginSuccessful.value = false;
-      showErrorDialog('Error', 'An error occurred: Try Again');
+      showErrorDialog('Error', 'An error occurred: Try Again${e.toString()}');
     }
   }
 
   // Handle the login logic
-  // Future<bool> handleLogin(String uname, String pass) async {
-  //   setCredentials(uname, pass);
-  //
-  //   await loginCheck(); // Validate the credentials by checking the server
-  //
-  //   if (isLoginSuccessful.value) {
-  //     // If the login is successful, store the user data locally
-  //     int timestamp = DateTime.now().millisecondsSinceEpoch;
-  //     await databaseController.addDataLocally(
-  //       Name: uname,
-  //       password: pass,
-  //       timestamp: timestamp,
-  //       fullName: fullName.value,
-  //     );
-  //     return true;
-  //   } else {
-  //     // If the login fails, just return false without storing anything
-  //     return false;
-  //   }
-  // }
+  Future<bool> handleLogin(String uname, String pass) async {
+    await dbController.deletePreSellOutlet();
+
+    setCredentials(uname, pass);
+
+    await loginCheck(); // Validate the credentials by checking the server
+
+    if (isLoginSuccessful.value) {
+      // If the login is successful, store the user data locally
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      await dbController.addUserData(
+        userID: uname,
+        password: pass,
+        timestamp: timestamp.toString(),
+        name: fullName.value,
+      );
+      return true;
+    } else {
+      // If the login fails, just return false without storing anything
+      return false;
+    }
+  }
 
   void setCredentials(String uname, String pass) {
     username.value = uname;
@@ -126,41 +202,28 @@ class LoginController extends GetxController {
   }
 
   void onPressed(GlobalKey<FormState> formKey) async {
-    // if (formKey.currentState?.validate() ?? false) {
-    //   final String userName = userNameController.text;
-    //   final String password = passwordController.text;
-    //
-    //   final bool loginSuccess =
-    //   await handleLogin(userName, password);
-    //
-    //   if (loginSuccess) {
-    //     if(userName == '2593' ){
-    //       print("first");
+    if (formKey.currentState?.validate() ?? false) {
+      final String userName = userNameController.text;
+      final String password = passwordController.text;
 
-    Get.to(() => Home(), transition: Transition.downToUp,);
-    //
-    //     }
-    //     else if(userName == '2693')
-    //     {
-    print("second");
+      final bool loginSuccess = await handleLogin(userName, password);
 
-    // Get.to(() => NewFirstPage());
+      if (loginSuccess) {
+        Get.to(
+          () => Home(),
+          transition: Transition.downToUp,
+        );
+        // Navigate to the next screen if login is successful
+        userNameController.clear();
+        passwordController.clear();
+      } else {
+        print("Invalid login attempt");
+      }
 
+      userNameController.clear();
+      passwordController.clear();
+    }
   }
-  // Navigate to the next screen if login is successful
-  // Get.toNamed('/nextScreen');
-
-  //       userNameController.clear();
-  //       passwordController.clear();
-  //     } else {
-  //       print("Invalid login attempt");
-  //     }
-  //
-  //     userNameController.clear();
-  //     passwordController.clear();
-  //   }
-  // }
-
 
   // Error dialog to display error messages
   void showErrorDialog(String title, String message) {
@@ -174,7 +237,7 @@ class LoginController extends GetxController {
       confirm: ElevatedButton(
         onPressed: () => Get.back(),
         style: ElevatedButton.styleFrom(
-          backgroundColor:  Colors.green,
+          backgroundColor: Colors.green,
           padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 50),
         ),
         child: const Text(

@@ -1,19 +1,19 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moiz_steel/widgets/build_section_title.dart';
 import '../controller/outlet_images_controller.dart';
-import 'package:moiz_steel/constants.dart';
 
 import '../services/database.dart';
 import '../utilities/common_functions.dart';
 import '../widgets/build_image_section.dart';
 import '../widgets/custom_appbar.dart';
 import '../widgets/custom_button_widget.dart';
+import 'daily_visit.dart';
 
 class OutletImages extends StatelessWidget {
   final PerformTask controller = Get.put(PerformTask());
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
+  final DatabaseHelper dbController = Get.put(DatabaseHelper());
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,13 @@ class OutletImages extends StatelessWidget {
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: const CustomAppBar(title: 'Outlet Details'),
+        appBar:  CustomAppBar(title: 'Outlet Details',onBackPressed: () {
+          // Your custom function
+          print('Custom back button pressed!');
+          dbController.deleteOutletNoOrders();
+          Get.back();
+           // Or any other logic
+        },),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -37,12 +43,10 @@ class OutletImages extends StatelessWidget {
                       imagePath: commonFunctions.outletImagePath,
                       gradient: controller.cardGradients[0],
                     ),
-
                     BuildImageSection(
                         title: "Storage Image",
                         imagePath: commonFunctions.storageImagePath,
                         gradient: controller.cardGradients[1]),
-
                     BuildImageSection(
                       title: "Visit Card",
                       imagePath: commonFunctions.visitingCardImagePath,
@@ -55,11 +59,11 @@ class OutletImages extends StatelessWidget {
                   text: 'Save',
                   icon: Icons.save_alt_outlined,
                   onPressed: () async {
-                    controller.proceedWithRegistration();
-                    await controller.submitData();
-                    commonFunctions.visitingCardImagePath.value = '';
-                    commonFunctions.storageImagePath.value = '';
-                    commonFunctions.outletImagePath.value = '';
+                     await controller.SaveNoOrder();
+                  //  await controller.saveImageDataLocally();
+                    // await controller.sendDataToServer();
+                    // Get.to(() => DailyVisit());
+
                   },
                 )
               ],

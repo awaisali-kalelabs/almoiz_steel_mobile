@@ -6,10 +6,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 
+import '../services/database.dart';
 import '../util/config.dart';
 import 'device_info.dart';
 
 class CommonFunctions {
+  final DatabaseHelper dbController = Get.put(DatabaseHelper());
+
+
   final ImagePicker _picker = ImagePicker();
   var userName = '';
   var outletImagePath = ''.obs;
@@ -31,6 +35,14 @@ class CommonFunctions {
   var accuracy = 0.0.obs;
   var deviceId = ''.obs;
 
+  var userId= ''.obs;
+  var orderId= 0.obs;
+
+
+  CommonFunctions() {
+    // Initialize the unique mobile ID when the class is instantiated
+    orderId.value = getUniqueMobileId();
+  }
 
   Future<void> captureImage(RxString imagePath) async {
     final pickedFile = await _picker.getImage(source: ImageSource.camera);
@@ -101,6 +113,16 @@ class CommonFunctions {
           DateTime.now().millisecondsSinceEpoch.toString();
     }
     return int.parse(MobileId);
+  }
+
+  void fetchUsernameFromLocalDB() async {
+    String? storedUsername = await dbController.getStoredUsername();
+    if (storedUsername != null && storedUsername.isNotEmpty) {
+      userId.value = storedUsername;
+      print("helloooo"+userId.value.toString());
+    } else {
+      userId.value = 'Guest'; // Or handle it as per your requirement
+    }
   }
 
 

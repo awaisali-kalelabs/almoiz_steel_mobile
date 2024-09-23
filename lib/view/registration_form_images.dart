@@ -18,10 +18,10 @@ class OutletRegistrationImages extends StatelessWidget {
 
   // Define a list of gradient colors for the cards
   final List<LinearGradient> cardGradients = [
-    LinearGradient(colors: [Color(0xFFFAEFE9), Color(0xFFFAEFE9)]),
-    LinearGradient(colors: [Color(0xFFDDF3EB),Color(0xFFDDF3EB)]),
-    LinearGradient(colors: [Color(0xFFE1F5FC), Color(0xFFE1F5FC)]),
-    LinearGradient(colors: [Color(0xFFE1EBEF), Color(0xFFE1EBEF)]),
+    const LinearGradient(colors: [Color(0xFFFAEFE9), Color(0xFFFAEFE9)]),
+    const LinearGradient(colors: [Color(0xFFDDF3EB), Color(0xFFDDF3EB)]),
+    const LinearGradient(colors: [Color(0xFFE1F5FC), Color(0xFFE1F5FC)]),
+    const LinearGradient(colors: [Color(0xFFE1EBEF), Color(0xFFE1EBEF)]),
   ];
 
   @override
@@ -38,10 +38,18 @@ class OutletRegistrationImages extends StatelessWidget {
               spacing: 20,
               runSpacing: 20,
               children: [
-                _buildCard('Outlet Image', commonFunctions.outletImageRegistrationPath, cardGradients[0]),
-                _buildCard('Godown Image', commonFunctions.godownImagePath, cardGradients[1]),
-                _buildCard('ID Card', commonFunctions.idCardImagePath, cardGradients[2]),
-                _buildCard('Visiting Card', commonFunctions.visitingCardRegistrationImagePath, cardGradients[3]),
+                _buildCard(
+                    'Outlet Image',
+                    commonFunctions.outletImageRegistrationPath,
+                    cardGradients[0]),
+                _buildCard('Godown Image', commonFunctions.godownImagePath,
+                    cardGradients[1]),
+                _buildCard('ID Card', commonFunctions.idCardImagePath,
+                    cardGradients[2]),
+                _buildCard(
+                    'Visiting Card',
+                    commonFunctions.visitingCardRegistrationImagePath,
+                    cardGradients[3]),
               ],
             ),
             const SizedBox(height: 40),
@@ -70,13 +78,9 @@ class OutletRegistrationImages extends StatelessWidget {
             CustomButtonWidget(
               text: 'Save',
               icon: Icons.save_alt_outlined,
-              onPressed: ()  {
-                  controller.proceedWithRegistration();
+              onPressed: () async {
+                await controller.proceedWithRegistration();
                 // Clear image paths on submit
-                commonFunctions.outletImageRegistrationPath.value = '';
-                commonFunctions.godownImagePath.value = '';
-                commonFunctions.idCardImagePath.value = '';
-                commonFunctions.visitingCardImagePath.value = '';
 
                 // Additional submit functionality
               },
@@ -93,43 +97,46 @@ class OutletRegistrationImages extends StatelessWidget {
         commonFunctions.captureImage(imagePath); // Capture image on tap
       },
       child: Obx(() => Container(
-        width: 150,
-        height: 150,
-        decoration: BoxDecoration(
-          gradient: gradient, // Apply the gradient color
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 5,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
-        child: imagePath.value.isNotEmpty
-            ? ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.file(
-            File(imagePath.value), // Display the image from the file path
-            fit: BoxFit.cover,
             width: 150,
             height: 150,
-          ),
-        )
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.image, size: 40, color: Colors.grey), // Placeholder icon
-            const SizedBox(height: 10),
-            Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 5),
-            Text(
-              'Tap to add image',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            decoration: BoxDecoration(
+              gradient: gradient, // Apply the gradient color
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5,
+                  offset: Offset(0, 5),
+                ),
+              ],
             ),
-          ],
-        ),
-      )),
+            child: imagePath.value.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.file(
+                      File(imagePath
+                          .value), // Display the image from the file path
+                      fit: BoxFit.cover,
+                      width: 150,
+                      height: 150,
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.image,
+                          size: 40, color: Colors.grey), // Placeholder icon
+                      const SizedBox(height: 10),
+                      Text(title,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Tap to add image',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+          )),
     );
   }
 }
