@@ -28,6 +28,18 @@ class LoginController extends GetxController {
   var deviceId = ''.obs; // New observable for device ID
   double appVersion = 1.0;
   String platform = "android";
+  var outletID = ''.obs;
+  var outletName=''.obs;
+  var address= ''.obs;
+  var telephone= ''.obs;
+  var lat= ''.obs;
+  var lng= ''.obs;
+  var dayNumber= ''.obs;
+  var PJPID = ''.obs;
+  var distributor_id=''.obs;
+  var region_id=''.obs;
+  var city_id=''.obs;
+
   // var outlets = [].obs;
 
 
@@ -71,23 +83,23 @@ class LoginController extends GetxController {
 
           // Iterate through each outlet and store its details
           for (var outlet in beatPlanRows) {
-            var outletID = outlet["OutletID"];
-            var outletName = outlet["OutletName"];
-            var address = outlet["Address"];
-            var telephone = outlet["Telepohone"];
-            var lat = outlet["lat"];
-            var lng = outlet["lng"];
-            var dayNumber = outlet["DayNumber"];
-            var PJPID= outlet['PJPID'];
-            var distributor_id= outlet['distributor_id'];
-            var region_id= outlet['region_id'];
-            var city_id= outlet['city_id'];
+             outletID.value = outlet["OutletID"];
+             outletName.value = outlet["OutletName"];
+             address.value = outlet["Address"];
+             telephone.value = outlet["Telepohone"];
+             lat.value = outlet["lat"];
+             lng.value = outlet["lng"];
+             dayNumber.value = outlet["DayNumber"];
+             PJPID.value= outlet['PJPID'];
+             distributor_id.value= outlet['distributor_id'];
+             region_id.value= outlet['region_id'];
+             city_id.value= outlet['city_id'];
 
 
             // Example: Storing in a list (could be a GetX observable list or a simple list)
 
             // Example of logging the stored values
-            print("OutletID: $outletID");
+            print("OutletID: ${outletID.value}");
             print("OutletName: $outletName");
             print("Address: $address");
             print("Telephone: $telephone");
@@ -98,17 +110,17 @@ class LoginController extends GetxController {
             print("region_id: $region_id");
             print("city_id: $city_id");
 
-            int outletIDInt = int.tryParse(outletID) ?? 0;  // Convert to int
-            int dayNumberInt = int.tryParse(dayNumber) ?? 1;
+            int outletIDInt = int.tryParse(outletID.value) ?? 0;  // Convert to int
+            int dayNumberInt = int.tryParse(dayNumber.value) ?? 1;
 
             try {
               await dbController.insertPreSellOutlet(
                 outlet_id: outletIDInt,
-                outlet_name: outletName,
+                outlet_name: outletName.value,
                 day_number: dayNumberInt,
                 owner: fullName.value,
-                address: address,
-                telephone: telephone,
+                address: address.value,
+                telephone: telephone.value,
                 nfc_tag_id: 'abc'.toString(),
                 visit_type: 0,
                 lat: lat.toString(),
@@ -133,10 +145,6 @@ class LoginController extends GetxController {
               isLoginSuccessful.value = false;
               return;  // Skip the rest of the process
             }
-
-
-
-
           }
 
           print("response==200 successful");

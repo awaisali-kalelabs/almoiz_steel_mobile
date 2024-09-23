@@ -462,6 +462,17 @@ class DatabaseHelper extends GetxService {
     print("Maps: $maps");
     return maps;
   }
+  Future<List<Map<String, dynamic>>> getOutletDataById(int outletId) async {
+    final Database db = await database;
+    List args = [];
+    args.add(outletId);
+    print("Outlet ID: $outletId");
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+        "SELECT * FROM preSellOutletsTable WHERE outlet_id = ?1", args);
+    print("Maps: $maps");
+    return maps;
+  }
+
 
   Future<void> insertPreSellOutlet({
     required int outlet_id,

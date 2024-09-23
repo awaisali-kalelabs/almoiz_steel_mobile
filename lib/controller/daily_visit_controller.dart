@@ -65,8 +65,40 @@ class DailyVisitController extends GetxController {
       print("Error fetching outlet data: $e");
     }
   }
+   // void printOutletData(int outletId) async {
+   //   List<Map<String, dynamic>> outletData = await  dbController.getOutletDataById(outletId);
+   //
+   //   if (outletData.isNotEmpty) {
+   //     outletData.forEach((outlet) {
+   //       print("Outlet ID: ${outlet['outlet_id']}");
+   //       print("Outlet Name: ${outlet['outlet_name']}");
+   //       print("Day Number: ${outlet['day_number']}");
+   //       print("Owner: ${outlet['owner']}");
+   //       print("Address: ${outlet['address']}");
+   //       print("Telephone: ${outlet['telephone']}");
+   //       print("NFC Tag ID: ${outlet['nfc_tag_id']}");
+   //       print("Visit Type: ${outlet['visit_type']}");
+   //       print("Latitude: ${outlet['lat']}");
+   //       print("Longitude: ${outlet['lng']}");
+   //       print("Area Label: ${outlet['area_label']}");
+   //       print("Sub Area Label: ${outlet['sub_area_label']}");
+   //       print("Is Alternate Visible: ${outlet['is_alternate_visible']}");
+   //       print("PIC Channel ID: ${outlet['pic_channel_id']}");
+   //       print("Channel Label: ${outlet['channel_label']}");
+   //       print("Order Created On Date: ${outlet['order_created_on_date']}");
+   //       print("VPO Classifications: ${outlet['common_outlets_vpo_classifications']}");
+   //       print("Visit: ${outlet['Visit']}");
+   //       print("Purchaser Name: ${outlet['purchaser_name']}");
+   //       print("Purchaser Mobile No: ${outlet['purchaser_mobile_no']}");
+   //       print("Cache Contact NIC: ${outlet['cache_contact_nic']}");
+   //     });
+   //   } else {
+   //     print("No data found for Outlet ID: $outletId");
+   //   }
+   // }
 
-  void addCard() {
+
+   void addCard() {
     final newCardContent = PreSellOutlets.toString();
     cardContents.add(newCardContent);
     cardCompletionStatus[newCardContent] = false; // Initially, the card is not completed

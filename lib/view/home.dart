@@ -10,6 +10,7 @@ import 'outlet_registration.dart';
 class Home extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
 
+
   Home({super.key});
 
   @override
