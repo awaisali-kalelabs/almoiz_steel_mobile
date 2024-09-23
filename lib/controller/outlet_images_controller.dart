@@ -112,69 +112,68 @@ class PerformTask extends GetxController {
         'Visiting Card Image Path: ${commonFunctions.visitingCardImagePath.value}');
   }
 
-  // Future<void> sendDataToServer() async {
-  //   List AllDocuments = [];
-  //
-  //   // Fetch all outlet images from the local database
-  //   await dbController.getAllOutletImages().then((val) async {
-  //     AllDocuments = val;
-  //     print("retrieve data::::${AllDocuments}");
-  //
-  //     for (int i = 0; i < AllDocuments.length; i++) {
-  //       int MobileRequestID = int.parse(AllDocuments[i]['OrderID'].toString());
-  //       print("MobileRequestID ::::${MobileRequestID}");
-  //
-  //
-  //       final url = Uri.parse(
-  //           'http://18.199.215.22/portal/mobile/MobileSyncNoOrdersV1');
-  //
-  //       // Convert image paths to File objects
-  //       var photoFile1 = File(AllDocuments[i]['imagePath1']);
-  //       var photoFile2 = File(AllDocuments[i]['imagePath2']);
-  //       var photoFile3 = File(AllDocuments[i]['imagePath3']);
-  //
-  //       try {
-  //         print("Sending data for user: " +
-  //             commonFunctions.userId.value.toString());
-  //
-  //         var request = http.MultipartRequest('POST', url)
-  //           ..fields['order_id'] = MobileRequestID.toString()
-  //           ..fields['user_id'] = commonFunctions.userId.value;
-  //
-  //         // Add the three image files if they exist
-  //         if (photoFile1.existsSync()) {
-  //           request.files
-  //               .add(await _createMultipartFile(photoFile1, "Outlet_image1"));
-  //         }
-  //         if (photoFile2.existsSync()) {
-  //           request.files
-  //               .add(await _createMultipartFile(photoFile2, "Outlet_image2"));
-  //         }
-  //         if (photoFile3.existsSync()) {
-  //           request.files
-  //               .add(await _createMultipartFile(photoFile3, "Outlet_image3"));
-  //         }
-  //
-  //         // Send the request and await response
-  //         var response = await request.send();
-  //
-  //         if (response.statusCode == 200) {
-  //           print("Image upload successful for order $MobileRequestID");
-  //           var responseData = await response.stream.bytesToString();
-  //           print("Response: $responseData");
-  //         } else {
-  //           print(
-  //               "Image upload failed with status code: ${response.statusCode}");
-  //         }
-  //       } catch (e) {
-  //         print('Error uploading images: $e');
-  //         // Handle the error here
-  //       }
-  //     }
-  //   });
-  // }
+  Future<void> sendDataToServer() async {
+    List AllDocuments = [];
 
-// Helper function to create MultipartFile from a File
+    // Fetch all outlet images from the local database
+    await dbController.getAllOutletImages().then((val) async {
+      AllDocuments = val;
+      print("retrieve data::::${AllDocuments}");
+
+      for (int i = 0; i < AllDocuments.length; i++) {
+        int MobileRequestID = int.parse(AllDocuments[i]['OrderID'].toString());
+        print("MobileRequestID ::::${MobileRequestID}");
+
+
+        final url = Uri.parse(
+            'http://18.199.215.22/portal/mobile/MobileSyncNoOrdersV1');
+
+        // Convert image paths to File objects
+        var photoFile1 = File(AllDocuments[i]['imagePath1']);
+        var photoFile2 = File(AllDocuments[i]['imagePath2']);
+        var photoFile3 = File(AllDocuments[i]['imagePath3']);
+
+        try {
+          print("Sending data for user: " +
+              commonFunctions.userId.value.toString());
+
+          var request = http.MultipartRequest('POST', url)
+            ..fields['order_id'] = MobileRequestID.toString()
+            ..fields['user_id'] = commonFunctions.userId.value;
+
+          // Add the three image files if they exist
+          if (photoFile1.existsSync()) {
+            request.files
+                .add(await _createMultipartFile(photoFile1, "Outlet_image1"));
+          }
+          if (photoFile2.existsSync()) {
+            request.files
+                .add(await _createMultipartFile(photoFile2, "Outlet_image2"));
+          }
+          if (photoFile3.existsSync()) {
+            request.files
+                .add(await _createMultipartFile(photoFile3, "Outlet_image3"));
+          }
+
+          // Send the request and await response
+          var response = await request.send();
+
+          if (response.statusCode == 200) {
+            print("Image upload successful for order $MobileRequestID");
+            var responseData = await response.stream.bytesToString();
+            print("Response: $responseData");
+          } else {
+            print(
+                "Image upload failed with status code: ${response.statusCode}");
+          }
+        } catch (e) {
+          print('Error uploading images: $e');
+          // Handle the error here
+        }
+      }
+    });
+  }
+
   Future<http.MultipartFile> _createMultipartFile(
       File file, String fieldName) async {
     var stream = http.ByteStream(file.openRead());
@@ -184,6 +183,9 @@ class PerformTask extends GetxController {
 
     return http.MultipartFile(fieldName, stream, length, filename: fileName);
   }
+
+
+
   String encryptSessionID(String qry) {
     String ret = "";
     for (int i = 0; i < qry.length; i++) {
