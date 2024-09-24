@@ -46,8 +46,8 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    passwordController = TextEditingController(text: "wildspace");
-    userNameController = TextEditingController(text: "2");
+    passwordController = TextEditingController();
+    userNameController = TextEditingController();
     commonFunctions
         .fetchDeviceId(); // Fetch the device ID when the controller is initialized
     commonFunctions.fetchLocation();
@@ -159,13 +159,18 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       isLoginSuccessful.value = false;
-      showErrorDialog('Error', 'An error occurred: Try Again${e.toString()}');
+      showErrorDialog('Error', 'Invalid user or password');
     }
   }
 
   // Handle the login logic
   Future<bool> handleLogin(String uname, String pass) async {
     await dbController.deletePreSellOutlet();
+    await dbController.deleteOutletNoOrders();
+    await dbController.deleteAllAttendanceRecords();
+    await dbController.deleteAllUsers();
+    await dbController.deleteAllImages();
+
 
     setCredentials(uname, pass);
 

@@ -8,7 +8,7 @@ import '../services/database.dart';
 enum Week { thisWeek, lastWeek }
 
 class DailyVisitController extends GetxController {
-   final DatabaseHelper dbController = Get.put(DatabaseHelper());
+  final DatabaseHelper dbController = Get.put(DatabaseHelper());
 
   var currentWeek = Week.thisWeek.obs;
   var cardContents = <String>[].obs;
@@ -19,13 +19,14 @@ class DailyVisitController extends GetxController {
   var cardCompletionStatus = <String, bool>{}.obs;
   var Day = ''.obs;
   var PreSellOutletsLength = 0.obs;
-  var orderID =''.obs ;
-   var orderId= 0.obs;
+  var orderId= 0.obs;
+  var userName = '';
 
 
 
 
-   final dayAbbreviationToNumber = {
+
+  final dayAbbreviationToNumber = {
     'Su': 1,
     'Mo': 2,
     'Tu': 3,
@@ -39,7 +40,7 @@ class DailyVisitController extends GetxController {
   void onInit() {
     super.onInit();
     initializeSelectedDay();
-     fetchOutletData();
+    fetchOutletData();
     addCard();
 
   }
@@ -53,6 +54,19 @@ class DailyVisitController extends GetxController {
     print("Selected day: ${selectedDay.value}, Number: ${selectedDayNumber.value}");
     changeDay(selectedDay.value);
   }
+  int getUniqueMobileId() {
+    ////print("UserID:" + username.toString());
+    String MobileId = "";
+    if (userName.toString().length > 4) {
+      MobileId = userName.toString() +
+          DateTime.now().millisecondsSinceEpoch.toString();
+    } else {
+      MobileId = userName.toString() +
+          DateTime.now().millisecondsSinceEpoch.toString();
+    }
+    return int.parse(MobileId);
+  }
+
 
   Future<void> fetchOutletData() async {
     try {
@@ -65,40 +79,40 @@ class DailyVisitController extends GetxController {
       print("Error fetching outlet data: $e");
     }
   }
-   // void printOutletData(int outletId) async {
-   //   List<Map<String, dynamic>> outletData = await  dbController.getOutletDataById(outletId);
-   //
-   //   if (outletData.isNotEmpty) {
-   //     outletData.forEach((outlet) {
-   //       print("Outlet ID: ${outlet['outlet_id']}");
-   //       print("Outlet Name: ${outlet['outlet_name']}");
-   //       print("Day Number: ${outlet['day_number']}");
-   //       print("Owner: ${outlet['owner']}");
-   //       print("Address: ${outlet['address']}");
-   //       print("Telephone: ${outlet['telephone']}");
-   //       print("NFC Tag ID: ${outlet['nfc_tag_id']}");
-   //       print("Visit Type: ${outlet['visit_type']}");
-   //       print("Latitude: ${outlet['lat']}");
-   //       print("Longitude: ${outlet['lng']}");
-   //       print("Area Label: ${outlet['area_label']}");
-   //       print("Sub Area Label: ${outlet['sub_area_label']}");
-   //       print("Is Alternate Visible: ${outlet['is_alternate_visible']}");
-   //       print("PIC Channel ID: ${outlet['pic_channel_id']}");
-   //       print("Channel Label: ${outlet['channel_label']}");
-   //       print("Order Created On Date: ${outlet['order_created_on_date']}");
-   //       print("VPO Classifications: ${outlet['common_outlets_vpo_classifications']}");
-   //       print("Visit: ${outlet['Visit']}");
-   //       print("Purchaser Name: ${outlet['purchaser_name']}");
-   //       print("Purchaser Mobile No: ${outlet['purchaser_mobile_no']}");
-   //       print("Cache Contact NIC: ${outlet['cache_contact_nic']}");
-   //     });
-   //   } else {
-   //     print("No data found for Outlet ID: $outletId");
-   //   }
-   // }
+  // void printOutletData(int outletId) async {
+  //   List<Map<String, dynamic>> outletData = await  dbController.getOutletDataById(outletId);
+  //
+  //   if (outletData.isNotEmpty) {
+  //     outletData.forEach((outlet) {
+  //       print("Outlet ID: ${outlet['outlet_id']}");
+  //       print("Outlet Name: ${outlet['outlet_name']}");
+  //       print("Day Number: ${outlet['day_number']}");
+  //       print("Owner: ${outlet['owner']}");
+  //       print("Address: ${outlet['address']}");
+  //       print("Telephone: ${outlet['telephone']}");
+  //       print("NFC Tag ID: ${outlet['nfc_tag_id']}");
+  //       print("Visit Type: ${outlet['visit_type']}");
+  //       print("Latitude: ${outlet['lat']}");
+  //       print("Longitude: ${outlet['lng']}");
+  //       print("Area Label: ${outlet['area_label']}");
+  //       print("Sub Area Label: ${outlet['sub_area_label']}");
+  //       print("Is Alternate Visible: ${outlet['is_alternate_visible']}");
+  //       print("PIC Channel ID: ${outlet['pic_channel_id']}");
+  //       print("Channel Label: ${outlet['channel_label']}");
+  //       print("Order Created On Date: ${outlet['order_created_on_date']}");
+  //       print("VPO Classifications: ${outlet['common_outlets_vpo_classifications']}");
+  //       print("Visit: ${outlet['Visit']}");
+  //       print("Purchaser Name: ${outlet['purchaser_name']}");
+  //       print("Purchaser Mobile No: ${outlet['purchaser_mobile_no']}");
+  //       print("Cache Contact NIC: ${outlet['cache_contact_nic']}");
+  //     });
+  //   } else {
+  //     print("No data found for Outlet ID: $outletId");
+  //   }
+  // }
 
 
-   void addCard() {
+  void addCard() {
     final newCardContent = PreSellOutlets.toString();
     cardContents.add(newCardContent);
     cardCompletionStatus[newCardContent] = false; // Initially, the card is not completed
@@ -107,7 +121,7 @@ class DailyVisitController extends GetxController {
   void changeDay(String dayAbbreviation) {
     selectedDay.value = dayAbbreviation;
     selectedDayNumber.value = dayAbbreviationToNumber[selectedDay.value] ?? 0; // Update day number
-     fetchOutletData(); // Fetch data for the newly selected day
+    fetchOutletData(); // Fetch data for the newly selected day
   }
 
   void changeWeek(Week week) {

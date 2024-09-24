@@ -8,9 +8,15 @@ import 'dart:io';
 
 import '../snack_bar_model.dart';
 import '../utilities/common_functions.dart';
+import 'outlet_images_controller.dart';
+import 'outlet_images_registration_controller.dart';
 
 class RegistrationImages extends GetxController {
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
+  final PerformTask controller = Get.put(PerformTask());
+  final FormController registrationController = Get.put(FormController());
+
+
 
   var outletImagePath = ''.obs;
   var GodownImagePath = ''.obs;
@@ -61,11 +67,11 @@ class RegistrationImages extends GetxController {
   Future<void> sendDataToServer() async {
     // Assuming allDocuments is provided from some external source
 
-    int MobileRequestID = commonFunctions.orderId.value;
+    int MobileRequestID = registrationController.orderId.value;
     print("MobileRequestID ::::${MobileRequestID}");
 
     final url = Uri.parse(
-        'http://192.168.201.197:8080/portal/mobile/MobileUploadNewOutletImage');
+        'http://18.199.215.22/portal/mobile/MobileUploadNewOutletImage');
 
     // Use image paths from commonFunctions directly
     var photoFile1 = File(commonFunctions.outletImageRegistrationPath.value);
@@ -120,7 +126,7 @@ class RegistrationImages extends GetxController {
     var stream = http.ByteStream(file.openRead());
     var length = await file.length();
     String fileName =
-        basename(file.path); // Use path.basename to get the file name
+    basename(file.path); // Use path.basename to get the file name
 
     return http.MultipartFile(fieldName, stream, length, filename: fileName);
   }

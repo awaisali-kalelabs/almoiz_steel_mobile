@@ -214,9 +214,13 @@ class Attendance extends StatelessWidget {
                   text: 'Save',
                   onPressed: () async {
                     // Clear image paths on submit
+                    commonFunctions.showLoader();
+
                     await attendanceController.markAttendanceLocally();
                     await attendanceController.UploadMarkAttendance();
                     await attendanceController.uploadMarkAttendancePhoto();
+                    commonFunctions.hideLoader();
+
                     Get.back();
                     commonFunctions.checkInImage.value='';
                     commonFunctions.checkInImage.value  ='';

@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controller/daily_visit_controller.dart';
 import '../controller/login_controller.dart';
+import '../controller/outlet_images_controller.dart';
 import '../snack_bar_model.dart';
+import '../utilities/common_functions.dart';
 import 'attendance_view.dart';
 import 'daily_visit.dart';
 import 'login_screen.dart';
 import 'outlet_registration.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 
 class Home extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
+  final PerformTask controller = Get.put(PerformTask());
+  final CommonFunctions commonFunctions = Get.put(CommonFunctions());
+  final DailyVisitController dailyVisitController = Get.put(DailyVisitController());
+
+
 
 
   Home({super.key});
@@ -53,11 +63,15 @@ class Home extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.cloud_upload),
                 title: const Text('Upload Data'),
-                onTap: () {
+                onTap: () async {
+                  commonFunctions.showLoader();
                   // Handle upload data logic
+                  await controller.SaveNoOrder();
+                  await controller.sendOutletImage();
+                  commonFunctions.hideLoader();
                   CustomSnackbar.show(
                     title: "Upload",
-                    message: "Uploading Data...",
+                    message: " Data uploaded successfully",
                   );
                 },
               ),
@@ -132,8 +146,8 @@ class Home extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Total Outlets: 10",
+                             Text(
+                              "Today's Outlets: ${dailyVisitController.PreSellOutlets.length}",
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.black,
@@ -141,18 +155,18 @@ class Home extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            const Text(
-                              "Visits: 7",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
+                            // const Text(
+                            //   "Visits: 7",
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     color: Colors.black,
+                            //   ),
+                            // ),
                             const SizedBox(height: 10),
                             // Progress Bar
-                            LinearProgressIndicator(
+                            const LinearProgressIndicator(
                               value: 7 / 10, // Calculating progress value (7 visits out of 10)
-                              backgroundColor: Colors.grey[300],
+                              backgroundColor: Colors.orange,
                               color: Colors.orange, // Color of the progress bar
                               minHeight: 10, // Height of the progress bar
                             ),

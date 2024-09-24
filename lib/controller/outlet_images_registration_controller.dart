@@ -13,11 +13,13 @@ import 'login_controller.dart';
 class FormController extends GetxController {
   final CommonFunctions commonFunctions = Get.put(CommonFunctions());
   final LoginController loginController = Get.put(LoginController());
+  var userName = '';
+  var orderId= 0.obs;
 
   final businessNameController = TextEditingController();
   final ownerNameController = TextEditingController();
   final cnicNumberController = TextEditingController();
-  final ntnNumberController = TextEditingController();
+  final ntnNumberController = TextEditingController(text: '0');
   final landlineNumberController = TextEditingController();
   final mobileNumberController = TextEditingController();
   final billingAddressController = TextEditingController();
@@ -54,6 +56,30 @@ class FormController extends GetxController {
     super.onClose();
   }
 
+  void clearFields() {
+    businessNameController.clear();
+    ownerNameController.clear();
+    cnicNumberController.clear();
+    ntnNumberController.clear();
+    landlineNumberController.clear();
+    mobileNumberController.clear();
+    billingAddressController.clear();
+    shippingAddressController.clear();
+    billingContactPersonController.clear();
+    logisticsContactPersonController.clear();
+    cityNameController.clear();
+    completeAddressController.clear();
+    yearInBusinessController.clear();
+    monthlySaleVolumeController.clear();
+    previousDealershipController.clear();
+
+    // Reset the observables
+    isOwner.value = false;
+    isOnRent.value = false;
+    createdBy.value = '';
+  }
+
+
   void toggleOwnership(bool isOwnerSelected) {
     if (isOwnerSelected) {
       isOwner.value = !isOwner.value; // Toggle the current state
@@ -67,6 +93,19 @@ class FormController extends GetxController {
       }
     }
   }
+  int getUniqueMobileId() {
+    ////print("UserID:" + username.toString());
+    String MobileId = "";
+    if (userName.toString().length > 4) {
+      MobileId = userName.toString() +
+          DateTime.now().millisecondsSinceEpoch.toString();
+    } else {
+      MobileId = userName.toString() +
+          DateTime.now().millisecondsSinceEpoch.toString();
+    }
+    return int.parse(MobileId);
+  }
+
   bool validateForm() {
     // Example of validating required fields
     if (businessNameController.text.isEmpty ||
@@ -110,8 +149,9 @@ class FormController extends GetxController {
       String TimeStamp = str[0];
       return TimeStamp;
     }
+    orderId.value = getUniqueMobileId();
     //  String TimeStamp = str[0];
- /*     return TimeStamp;
+    /*     return TimeStamp;
     }*/
 
     String getCurrentTimestampSql() {
@@ -141,7 +181,7 @@ class FormController extends GetxController {
         "&monthly_sale_volume=${monthlySaleVolumeController.text}"
         "&previous_dealership=${previousDealershipController.text}"
         "&is_owner=${isOwner.value}"
-        "&mobile_request_id=${commonFunctions.orderId.value}"
+        "&mobile_request_id=${orderId.value}"
         "&lat=${commonFunctions.latitude.value.toString()}"
         "&lng=${commonFunctions.longitude.value.toString()}"
         "&accuracy=${commonFunctions.accuracy.value.toString()}"
@@ -157,7 +197,7 @@ class FormController extends GetxController {
         "SessionID": encryptSessionID(params),
       };
       print(queryParameters);
-     // var url = Uri.http(serverIp, apiEndpoint , queryParameters );
+      // var url = Uri.http(serverIp, apiEndpoint , queryParameters );
       var url = Uri.http(serverIp, '/portal/mobile/MobileSyncOutletRegistration');
 
       print(url);
@@ -177,7 +217,7 @@ class FormController extends GetxController {
       if (response.statusCode == 200) {
         var responseBody = json.decode(utf8.decode(response.bodyBytes));
 
-        if (responseBody["success"] == true) {
+        if (responseBody["success"] == "true") {
           // Handle successful submission
           print("Form submitted successfully: ${responseBody["message"]}");
         } else {

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +35,7 @@ class DailyVisit extends StatelessWidget {
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: const CustomAppBar(title: 'Daily Visit'),
+        appBar:  const CustomAppBar(title: 'Daily Visit' ,),
         body: Column(
           children: [
             Padding(
@@ -129,13 +128,15 @@ class DailyVisit extends StatelessWidget {
         final cardContent = filteredContents[index];
         return GestureDetector(
           onTap: () async {
+            dailyVisitController.orderId.value= dailyVisitController.getUniqueMobileId();
+            int outletIDInt = int.tryParse(loginController.outletID.value) ?? 0;
             DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
             String currDateTime = dateFormat.format(DateTime.now());
             await dbController.addOutletNoOrder(
-              id: commonFunctions.orderId.value,
-              outletId:2,
+              id: dailyVisitController.orderId.value,
+              outletId:outletIDInt,
               reasonTypeId: '1',
-              uuid: '23232323',
+              uuid: commonFunctions.deviceId.value,
               createdOn: currDateTime,
               lat:commonFunctions.latitude.value.toString(),
               lng: commonFunctions.longitude.value.toString(),

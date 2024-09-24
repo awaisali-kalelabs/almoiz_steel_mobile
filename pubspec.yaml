@@ -49,6 +49,7 @@ dependencies:
   shared_preferences:
 #  geolocator: ^9.0.2
 #  permission_handler:
+  connectivity_plus:
 dev_dependencies:
   flutter_test:
     sdk: flutter

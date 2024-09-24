@@ -19,7 +19,7 @@ class DatabaseHelper extends GetxService {
     String path = join(dbPath, 'userData.db');
     return await openDatabase(
       path,
-      version: 9,
+      version: 10,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -43,6 +43,7 @@ class DatabaseHelper extends GetxService {
         imagePath1 TEXT NOT NULL,
         imagePath2 TEXT NOT NULL,
         imagePath3 TEXT NOT NULL,
+        IsUploaded INTEGER DEFAULT 0,
         lat REAL NOT NULL,
         lng REAL NOT NULL,
         accuracy REAL NOT NULL,
@@ -393,6 +394,10 @@ class DatabaseHelper extends GetxService {
     final db = await database;
     return await db.delete('userData', where: 'id = ?', whereArgs: [id]);
   }
+  Future<int> deleteAllUsers() async {
+    final db = await database;
+    return await db.delete('userData');
+  }
 
   /// functions for outlet images
 
@@ -454,8 +459,14 @@ class DatabaseHelper extends GetxService {
   // Read all outlet images
   Future<List<Map<String, dynamic>>> getAllOutletImages() async {
     final db = await database;
-    return await db.query('outletImages');
+    // Query the table for all outletImages where is_uploaded is 0
+    return await db.query(
+      'outletImages',
+      where: 'IsUploaded = ?',
+      whereArgs: [0],
+    );
   }
+
 
   // Update an outlet image entry
   Future<int> updateImage(
@@ -489,6 +500,10 @@ class DatabaseHelper extends GetxService {
   Future<int> deleteImage(int id) async {
     final db = await database;
     return await db.delete('outletImages', where: 'id = ?', whereArgs: [id]);
+  }
+  Future<int> deleteAllImages() async {
+    final db = await database;
+    return await db.delete('outletImages');
   }
 
   /// attendance functions
@@ -579,6 +594,14 @@ class DatabaseHelper extends GetxService {
       whereArgs: [id],
     );
   }
+  Future<int> deleteAllAttendanceRecords() async {
+    final db = await database;
+
+    return await db.delete(
+      'attendanceRecords',
+    );
+  }
+
 
   /// functions for preselloutlets
   Future<List<Map<String, dynamic>>> getAllOutletData(int dayNumber) async {
@@ -729,12 +752,17 @@ class DatabaseHelper extends GetxService {
   }
   Future<List<Map<String, dynamic>>> getOutletNoOrders() async {
     final db = await database;
-    // Query the table for all outletNoOrders
-    final List<Map<String, dynamic>> results = await db.query('outletNoOrdersTable');
-    print("getOutletNoOrders${results}");
+    // Query the table for all outletNoOrders where is_uploaded is 0
+    final List<Map<String, dynamic>> results = await db.query(
+      'outletNoOrdersTable',
+      where: 'is_uploaded = ?',
+      whereArgs: [0],
+    );
+    print("getOutletNoOrders: ${results}");
 
     return results;
   }
+
   Future<int> deleteOutletNoOrders() async {
     final db = await database;
     // Delete all records from outletNoOrdersTable
@@ -742,6 +770,22 @@ class DatabaseHelper extends GetxService {
     print("deleteOutletNoOrders: $result entries deleted");
 
     return result;
+  }
+  Future markOrderUploaded(int orderId) async {
+    final Database db = await database;
+    List args = [];
+    args.add(orderId);
+    await db.rawUpdate(
+        'update outletNoOrdersTable set is_uploaded=1 where id=?1 ', args);
+    return true;
+  }
+  Future markOrderImageUploaded(orderId) async {
+    final Database db = await database;
+    List args = [];
+    args.add(orderId);
+    await db.rawUpdate(
+        'update outletImages set IsUploaded=1 where OrderID=?1 ', args);
+    return true;
   }
 
 

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -86,7 +88,19 @@ class CommonFunctions {
       print('Error fetching location: $e');
     }
   }
-
+  void showLoader() {
+    Get.dialog(
+      Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+    );
+  }
+  void hideLoader() {
+    if (Get.isDialogOpen!) {
+      Get.back();
+    }
+  }
 
   // void fetchLocation() async {
   //   try {

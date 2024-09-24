@@ -69,6 +69,7 @@ class RegistrationFormScreen extends StatelessWidget {
                     }
                     return null;
                   },
+                  maxLength: 13,
                 ),
                 TitleText(title: 'Landline Number'),
                 CustomFormField(
@@ -221,7 +222,6 @@ class RegistrationFormScreen extends StatelessWidget {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // Proceed if the form is valid
-                      await controller.submitFormData();
                       Get.to(() => OutletRegistrationImages(),
                           transition: Transition.leftToRight);
                     }

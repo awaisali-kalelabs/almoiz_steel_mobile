@@ -64,6 +64,7 @@ class LoginScreen extends StatelessWidget {
                           hintText: 'Username',
                           prefixIcon: const Icon(Icons.person, color: Colors.grey),
                           validator: (val) => null,
+                          keyboardType: TextInputType.number,
                         ),
                         const SizedBox(height: 20),
                         Obx(

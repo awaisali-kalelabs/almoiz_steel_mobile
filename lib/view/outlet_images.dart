@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import '../controller/outlet_images_controller.dart';
 
 import '../services/database.dart';
+import '../snack_bar_model.dart';
 import '../utilities/common_functions.dart';
 import '../widgets/build_image_section.dart';
 import '../widgets/custom_appbar.dart';
 import '../widgets/custom_button_widget.dart';
 import 'daily_visit.dart';
+import 'home.dart';
 
 class OutletImages extends StatelessWidget {
   final PerformTask controller = Get.put(PerformTask());
@@ -26,7 +28,7 @@ class OutletImages extends StatelessWidget {
           print('Custom back button pressed!');
           dbController.deleteOutletNoOrders();
           Get.back();
-           // Or any other logic
+          // Or any other logic
         },),
         body: SingleChildScrollView(
           child: Padding(
@@ -58,13 +60,41 @@ class OutletImages extends StatelessWidget {
                 CustomButtonWidget(
                   text: 'Save',
                   icon: Icons.save_alt_outlined,
-                  onPressed: () async {
-                     await controller.SaveNoOrder();
-                  //  await controller.saveImageDataLocally();
-                    // await controller.sendDataToServer();
-                    // Get.to(() => DailyVisit());
+                    onPressed: () async {
+                      // Show loader while processing
 
-                  },
+                      // Check if saveImageDataLocally() succeeds
+                      bool isSavedLocally = await controller.saveImageDataLocally();
+
+                      if (isSavedLocally) {
+                        // If the function returns true, continue with the rest of the operations
+                        commonFunctions.showLoader();
+
+                        await controller.SaveNoOrder();
+                        await controller.sendOutletImage();
+                        commonFunctions.hideLoader();
+
+                        Get.to(() => Home());
+                        CustomSnackbar.show(
+                          title: "Visit",
+                          message: " Visit has been completed successfully",
+                        );
+
+                        // await controller.sendDataToServer();
+                      } else {
+                        // Handle the case when saveImageDataLocally() fails
+                        commonFunctions.hideLoader();
+                        CustomSnackbar.show(
+                          title: "Error",
+                          message: " Failed to save image data locallyy",
+                        );
+                        return; // Exit the function early
+                      }
+
+                      // Hide loader after processing
+
+                      // Navigate to Home
+                    }
                 )
               ],
             ),
